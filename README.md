@@ -55,6 +55,6 @@ Los dos módulos comparten el mismo motor de consulta, las mismas reglas de prio
 - [X]  funciones para clasificar y priorizar
 - [ ]  pruebas con entradas inesperadas y fallos de red
 - [ ]  base de datos con SQLite
-- [ ]  página web para registrar y consultar casos
+- [ ]  registrar y consultar casos
 - [ ]  resúmenes con `pandas`
 - [ ]  integración y presentación final
