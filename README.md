@@ -12,8 +12,7 @@ En el laboratorio hay equipos, impresoras y servidores que fallan sin que nadie 
 - Registra cada falla como un caso con descripción, categoría, estado y prioridad.
 - Calcula la prioridad con reglas definidas en funciones puras.
 - Guarda el historial en una base de datos SQLite.
-- Muestra y permite registrar casos desde una página web.
-- Resume los datos con `pandas`: qué falla más, en qué horarios y por estado, canal o semana.
+- Muestra y permite registrar casos.
 
 ## Módulos
 
