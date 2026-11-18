@@ -1,6 +1,6 @@
 # Monitor de servicios del laboratorio
 
-Proyecto del curso de Python. Es una herramienta que revisa el estado de varios equipos y pasarelas de pago al mismo tiempo, ordena las fallas según su urgencia y guarda el historial para consultarlo después en una página web.
+Proyecto del curso de Python. Es una herramienta que revisa el estado de varios equipos y pasarelas de pago al mismo tiempo, ordena las fallas según su urgencia y guarda el historial para consultarlo.
 
 ## Problema que resuelve
 
