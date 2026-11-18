@@ -55,5 +55,4 @@ Los dos módulos comparten el mismo motor de consulta, las mismas reglas de prio
 - [X]  pruebas con entradas inesperadas y fallos de red
 - [X]  base de datos con SQLite
 - [X]  registrar y consultar casos
-- [ ]  resúmenes con `pandas`
 - [ ]  integración y presentación final
