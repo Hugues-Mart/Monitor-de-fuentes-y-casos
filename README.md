@@ -53,8 +53,8 @@ Los dos módulos comparten el mismo motor de consulta, las mismas reglas de prio
 - [X]  consulta concurrente de fuentes simuladas con `asyncio`
 - [X]  comparación entre hilos, procesos y `asyncio`
 - [X]  funciones para clasificar y priorizar
-- [ ]  pruebas con entradas inesperadas y fallos de red
-- [ ]  base de datos con SQLite
-- [ ]  registrar y consultar casos
+- [X]  pruebas con entradas inesperadas y fallos de red
+- [X]  base de datos con SQLite
+- [X]  registrar y consultar casos
 - [ ]  resúmenes con `pandas`
 - [ ]  integración y presentación final
