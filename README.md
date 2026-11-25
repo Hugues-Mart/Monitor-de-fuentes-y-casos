@@ -53,20 +53,22 @@ Las fuentes son simuladas, con fallas y retrasos aleatorios, para poder demostra
 
 ## Estructura del proyecto
 
-```
-monitor/
-├── app/
-│   ├── main.py
-│   ├── menu.py
-│   ├── monitor.py
-│   ├── db.py
-│   └── config.py
-├── static/
-│   └── index.html
+monitor_web/
+├── monitor/
+│   ├── app/
+│   │   ├── __init__.py
+│   │   ├── auth.py
+│   │   ├── config.py
+│   │   ├── db.py
+│   │   ├── facturas.py
+│   │   ├── main.py
+│   │   ├── menu.py
+│   │   └── monitor.py
+│   └── static/
+│       └── index.html
 ├── requirements.txt
 ├── .env.example
 └── .gitignore
-```
 
 **Dónde se guarda cada listado**
 
