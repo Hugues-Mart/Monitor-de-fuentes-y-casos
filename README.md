@@ -1,39 +1,43 @@
-# Monitor de servicios del laboratorio
+# Monitor de fuentes y casos
 
-Proyecto del curso de Python. Es una herramienta que revisa el estado de varios equipos y pasarelas de pago al mismo tiempo, ordena las fallas según su urgencia y guarda el historial para consultarlo.
+Proyecto final de Programación Avanzada A1 (Universidad de La Guajira, 2026-2). Es una aplicación web que revisa el estado de varios equipos y pasarelas de pago al mismo tiempo, registra cada falla como un caso, ordena los casos según su urgencia y guarda el historial para consultarlo.
 
 ## Problema que resuelve
 
-En el laboratorio hay equipos, impresoras y servidores que fallan sin que nadie lo note a tiempo, y los cobros se pierden de vista entre distintos canales. Este proyecto reúne todo en un solo lugar para saber qué está fallando y qué hay que atender primero.
+hay equipos, impresoras y servidores que fallan sin que nadie lo note a tiempo, y los cobros se pierden de vista entre distintos canales. El encargado de soporte se entera de una falla solo cuando alguien se queja y tiene que revisar equipo por equipo.
 
 ## Qué hace
 
-- Consulta varias fuentes en paralelo con `asyncio`, aunque alguna falle o se demore.
+- Consulta varias fuentes en paralelo con `asyncio`, aunque alguna falle o se demore (cada consulta tiene un tiempo límite).
 - Registra cada falla como un caso con descripción, categoría, estado y prioridad.
-- Calcula la prioridad con reglas definidas en funciones puras.
-- Guarda el historial en una base de datos SQLite.
-- Muestra y permite registrar casos.
+- No duplica casos: si ya hay uno abierto para la misma fuente y categoría, no crea otro.
+- Calcula la prioridad con una función pura (`calcular_prioridad`).
+- Guarda el historial en una base de datos SQLite (`monitor.db`).
+- Permite ver casos abiertos, registrar un caso a mano, resolverlo y consultar el historial.
+- Interfaz web con menú en tarjetas, contadores de casos abiertos y estado de las fuentes en vivo.
+- Validación de la opción del menú: los valores negativos son inválidos y el usuario se queda en el menú. También se puede escribir una suma, resta o multiplicación cuyo resultado sea una opción (por ejemplo `1+1` abre la opción 2 y `5-5` la opción 0, salir).
 
-## Módulos
+## Fuentes monitoreadas (simuladas)
 
 **Dispositivos**
 
-| Fuente (simulada) | Criticidad |
+| Fuente | Criticidad base |
 |---|---|
 | Servidor de archivos | Alta |
 | Router / switch | Media |
 | Equipo de práctica | Media |
 | Impresora | Baja |
 
-**Pagos y facturas**
+**Pagos**
 
-| Fuente (simulada) | Descripción |
+| Fuente | Criticidad base |
 |---|---|
-| Pasarela A | Cobros en línea |
-| Pasarela B | Cobros alternativos |
-| Banco simulado | Pagos por transferencia |
+| Pasarela A (cobros en línea) | Alta |
+| Pasarela B (cobros alternativos) | Media |
+| Banco simulado (transferencias) | Media |
 
-Los dos módulos comparten el mismo motor de consulta, las mismas reglas de prioridad y la misma base de datos.
+Las fuentes son simuladas, con fallas y retrasos aleatorios, para poder demostrar el funcionamiento. Todas comparten el mismo motor de consulta, las mismas reglas de prioridad y la misma base de datos.
+
 
 ## Reglas de prioridad
 
@@ -46,6 +50,60 @@ Los dos módulos comparten el mismo motor de consulta, las mismas reglas de prio
 - Vencida y con monto alto: prioridad máxima.
 - Vence en menos de 3 días: prioridad alta.
 - Pagada: sale de la cola.
+
+## Estructura del proyecto
+
+```
+monitor/
+├── app/
+│   ├── main.py
+│   ├── menu.py
+│   ├── monitor.py
+│   ├── db.py
+│   └── config.py
+├── static/
+│   └── index.html
+├── requirements.txt
+├── .env.example
+└── .gitignore
+```
+
+**Dónde se guarda cada listado**
+
+- Casos: tabla `casos` de `monitor.db` (SQLite), creada en `app/db.py` → `conectar()`.
+- Opciones del menú: diccionario `MENU` en `app/config.py`.
+- Fuentes monitoreadas: diccionario `FUENTES` en `app/config.py`.
+
+  ## Instalación y ejecución
+
+Requisitos: Python 3.10 o superior.
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+python -m pip install -r requirements.txt
+copy .env.example .env
+python -m uvicorn app.main:app --reload
+```
+
+Abrir en el navegador: http://127.0.0.1:8000 (la documentación automática de la API está en `/docs`).
+
+El servidor debe quedar corriendo mientras se usa la página. Para detenerlo, `Ctrl + C`.
+
+**Variables de entorno (`.env`)**
+
+| Variable | Descripción | Valor por defecto |
+|---|---|---|
+| `RUTA_BD` | Archivo de la base de datos | `monitor.db` |
+| `TIMEOUT` | Segundos máximos de espera por fuente | `2.0` |
+
+## Uso de IA
+
+Se usó **Claude** (Anthropic) como apoyo en estas partes del proyecto:
+
+- Convertir la versión de consola en una API con FastAPI y una interfaz web.
+- Escribir la validación de la opción del menú (`app/menu.py`).
+- Diseñar la interfaz (`static/index.html`).
 
 ## Avance del proyecto
 
