@@ -88,7 +88,6 @@ python -m uvicorn app.main:app --reload
 
 Abrir en el navegador: http://127.0.0.1:8000 (la documentación automática de la API está en `/docs`).
 
-El servidor debe quedar corriendo mientras se usa la página. Para detenerlo, `Ctrl + C`.
 
 **Variables de entorno (`.env`)**
 
