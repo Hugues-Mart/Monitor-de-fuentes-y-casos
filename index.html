@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Monitor de fuentes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070b1a;--panel:rgba(255,255,255,.055);--panel2:rgba(255,255,255,.09);--tx:#eef2ff;--mut:#97a3c7;--line:rgba(255,255,255,.12);--acc:#7c5cff;--acc2:#22d3ee;--ok:#34e8a0;--bad:#ff5d7a;--warn:#ffc24b;--g:linear-gradient(135deg,#7c5cff,#22d3ee)}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--tx);font:16px/1.5 "Bricolage Grotesque","Segoe UI",system-ui,sans-serif;overflow-x:hidden}
+body::before,body::after{content:"";position:fixed;width:60vmax;height:60vmax;border-radius:50%;filter:blur(110px);opacity:.35;z-index:-1;animation:drift 18s ease-in-out infinite alternate}
+body::before{background:#7c5cff;top:-25vmax;left:-15vmax}body::after{background:#0ea5c6;bottom:-30vmax;right:-15vmax;animation-delay:-9s}
+@keyframes drift{to{transform:translate(8vmax,6vmax) scale(1.15)}}
+.grad{background:var(--g);-webkit-background-clip:text;background-clip:text;color:transparent}
+.glass{background:var(--panel);border:1px solid var(--line);border-radius:22px;backdrop-filter:blur(18px);box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.shake{animation:shake .4s}@keyframes shake{25%{transform:translateX(-9px)}50%{transform:translateX(9px)}75%{transform:translateX(-5px)}}
+/* login */
+#login{min-height:100vh;display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:40px;max-width:1100px;margin:0 auto;padding:30px 20px}
+@media(max-width:860px){#login{grid-template-columns:1fr}.brand .radar{display:none}}
+.logo{display:inline-flex;align-items:center;gap:10px;font-weight:800;font-size:1.1rem}
+.logo i{width:34px;height:34px;border-radius:10px;background:var(--g);display:grid;place-items:center;box-shadow:0 0 24px #7c5cff88}
+.logo svg{width:18px;stroke:#fff}
+.brand h1{font-size:clamp(2.4rem,6vw,4rem);line-height:1.02;margin:22px 0 14px;font-weight:800;letter-spacing:-.03em}
+.brand p{color:var(--mut);max-width:44ch;font-size:1.1rem}
+.radar{position:relative;width:220px;height:220px;margin-top:34px;border-radius:50%;border:1px solid var(--line);background:repeating-radial-gradient(circle,transparent 0 36px,var(--line) 37px 38px)}
+.radar::before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,#22d3ee00 0 75%,#22d3ee88);animation:spin 3.2s linear infinite}
+.radar b{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--ok);box-shadow:0 0 12px var(--ok);animation:blip 3.2s infinite}
+.radar b:nth-child(1){top:30%;left:62%}.radar b:nth-child(2){top:64%;left:28%;background:var(--bad);box-shadow:0 0 12px var(--bad);animation-delay:-1.4s}.radar b:nth-child(3){top:72%;left:68%;background:var(--warn);box-shadow:0 0 12px var(--warn);animation-delay:-2.2s}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes blip{0%,100%{opacity:.2}30%{opacity:1}}
+#login .glass{padding:30px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:rgba(0,0,0,.3);border-radius:14px;padding:4px;margin-bottom:22px}
+.tabs button{font:inherit;font-weight:700;color:var(--mut);background:none;border:0;padding:10px;border-radius:11px;cursor:pointer}
+.tabs button.on{background:var(--g);color:#fff;box-shadow:0 6px 18px #7c5cff55}
+#l-form{display:grid;gap:14px}#l-form label{display:grid;gap:6px;font-weight:600;font-size:.92rem}
+.inp{position:relative}
+input,select{font:inherit;color:var(--tx);width:100%;padding:13px 15px;border-radius:13px;border:1.5px solid var(--line);background:rgba(0,0,0,.28);transition:.2s}
+select option{color:#000}input::placeholder{color:#6d7aa3}
+input:focus,select:focus{outline:none;border-color:var(--acc2);box-shadow:0 0 0 4px #22d3ee22}
+#ver{position:absolute;right:8px;top:50%;transform:translateY(-50%);font:inherit;font-size:.8rem;font-weight:700;color:var(--acc2);background:none;border:0;cursor:pointer;padding:6px}
+#medidor{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}#medidor i{height:5px;border-radius:9px;background:var(--line)}
+#medidor[data-s="1"] i:nth-child(-n+1){background:var(--bad)}#medidor[data-s="2"] i:nth-child(-n+2){background:var(--warn)}#medidor[data-s="3"] i:nth-child(-n+3){background:var(--acc2)}#medidor[data-s="4"] i{background:var(--ok)}
+.cta{font:inherit;font-weight:800;font-size:1.05rem;color:#fff;border:0;border-radius:14px;padding:14px;background:var(--g);cursor:pointer;box-shadow:0 10px 28px #7c5cff55;transition:.2s}
+.cta:hover{transform:translateY(-2px);box-shadow:0 14px 34px #7c5cff88}.cta:disabled{opacity:.6;cursor:wait}
+#l-error{color:var(--bad);font-weight:600;min-height:1.4em;margin:0;font-size:.92rem}
+/* app */
+.wrap{max-width:1180px;margin:0 auto;padding:22px 16px 70px;display:grid;gap:22px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.who{display:flex;align-items:center;gap:10px;padding:6px 6px 6px 14px;border-radius:999px}
+.who .av{width:34px;height:34px;border-radius:50%;background:var(--g);display:grid;place-items:center;font-weight:800}
+.out{font:inherit;font-weight:700;font-size:.85rem;color:var(--tx);background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:7px 14px;cursor:pointer}.out:hover{border-color:var(--bad);color:var(--bad)}
+.hero h1{margin:0;font-size:clamp(1.9rem,4.5vw,3rem);font-weight:800;letter-spacing:-.03em}.hero p{margin:4px 0 0;color:var(--mut)}
+#stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+.kpi{padding:18px 20px;border-radius:20px;background:var(--panel);border:1px solid var(--line);position:relative;overflow:hidden;transition:.2s}
+.kpi:hover{transform:translateY(-4px)}.kpi::after{content:"";position:absolute;inset:auto -20% -60% 30%;height:100%;background:var(--c,#7c5cff);filter:blur(40px);opacity:.35}
+.kpi span{color:var(--mut);font-weight:600;font-size:.9rem}.kpi b{display:block;font-size:2.8rem;line-height:1.1;font-weight:800;position:relative;z-index:1}
+.kpi.all{--c:#7c5cff}.kpi.alta{--c:var(--bad)}.kpi.media{--c:var(--warn)}.kpi.baja{--c:var(--acc2)}
+.layout{display:grid;grid-template-columns:340px 1fr;gap:22px;align-items:start}@media(max-width:860px){.layout{grid-template-columns:1fr}}
+.rail{display:grid;gap:10px}.picker{display:flex;gap:8px}
+.go{font:inherit;font-weight:800;color:#fff;border:0;border-radius:13px;padding:0 22px;background:var(--g);cursor:pointer}
+.picker input.shake{border-color:var(--bad)}
+.card{display:flex;gap:13px;align-items:center;text-align:left;font:inherit;color:var(--tx);background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px 14px;cursor:pointer;transition:.2s}
+.card:hover{transform:translateX(6px);border-color:var(--acc2);background:var(--panel2)}
+.card.on{border-color:transparent;background:linear-gradient(var(--bg),var(--bg)) padding-box,var(--g) border-box;border:1.5px solid transparent;box-shadow:0 0 28px #7c5cff44}
+.card .n{flex:none;width:40px;height:40px;border-radius:12px;background:var(--g);display:grid;place-items:center}.card .n svg{width:20px}
+.card.salir .n{background:#3a4468}.card b{display:block;line-height:1.2}.card small{color:var(--mut)}
+.card kbd{margin-left:auto;font:700 .8rem ui-monospace,monospace;color:var(--mut);border:1px solid var(--line);border-radius:7px;padding:1px 8px}
+:focus-visible{outline:3px solid var(--acc2);outline-offset:2px}
+.stage{padding:24px;min-height:420px}.stage h2{margin:0 0 4px;font-size:1.5rem}.stage .hint{color:var(--mut);margin:0 0 18px}
+.empty{display:grid;place-items:center;text-align:center;min-height:320px;color:var(--mut)}.empty strong{display:block;font-size:1.6rem;color:var(--tx);margin-bottom:6px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+.tile{border:1.5px solid var(--line);border-radius:16px;padding:14px;background:rgba(0,0,0,.25);animation:pop .4s both}
+@keyframes pop{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+.tile.scan .led{background:var(--mut);animation:pulse 1s infinite}@keyframes pulse{50%{opacity:.2}}
+.tile.ok{border-color:var(--ok);box-shadow:0 0 22px #34e8a022}.tile.caido{border-color:var(--bad);box-shadow:0 0 22px #ff5d7a33}.tile.timeout{border-color:var(--warn);box-shadow:0 0 22px #ffc24b22}
+.led{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:8px}
+.ok .led{background:var(--ok);box-shadow:0 0 10px var(--ok)}.caido .led{background:var(--bad);box-shadow:0 0 10px var(--bad)}.timeout .led{background:var(--warn);box-shadow:0 0 10px var(--warn)}
+.tile b{display:block;word-break:break-word}.tile span{color:var(--mut);font-size:.9rem}.sum{margin-top:18px;font-weight:700}
+.cases{display:grid;gap:10px}
+.case{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;border:1px solid var(--line);border-left:5px solid var(--mut);border-radius:14px;padding:12px 14px;background:rgba(0,0,0,.22);animation:pop .3s both}
+.case.alta{border-left-color:var(--bad)}.case.media{border-left-color:var(--warn)}.case.baja{border-left-color:var(--acc2)}
+.case .id{font-weight:800;color:var(--mut)}.case small{color:var(--mut);display:block}
+.tag{font-size:.78rem;font-weight:700;border-radius:999px;padding:2px 10px;background:var(--panel2);margin-left:6px}
+.btn{font:inherit;font-weight:700;border:1.5px solid var(--acc2);background:transparent;color:var(--acc2);border-radius:11px;padding:7px 14px;cursor:pointer}
+.btn:hover{background:var(--acc2);color:#04121a}.btn.fill{background:var(--g);border:0;color:#fff}
+.form{display:grid;gap:12px;max-width:480px}.form label{display:grid;gap:5px;font-weight:600}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,30px);opacity:0;background:#fff;color:#0b1020;padding:12px 20px;border-radius:14px;font-weight:700;max-width:92vw;transition:.25s;pointer-events:none;z-index:9}
+.toast.show{opacity:1;transform:translate(-50%,0)}.toast.bad{background:var(--bad);color:#fff}.toast.good{background:var(--ok);color:#04201a}
+@media(prefers-reduced-motion:reduce){*,::before,::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<section id="login" hidden>
+  <div class="brand">
+    <div class="logo"><i><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></i>Monitor</div>
+    <h1>Tus sistemas, <span class="grad">siempre bajo control.</span></h1>
+    <p>Detecta caídas al instante, abre casos automáticamente y sigue cada falla hasta resolverla.</p>
+    <div class="radar" aria-hidden="true"><b></b><b></b><b></b></div>
+  </div>
+  <div class="glass">
+    <div class="tabs"><button data-m="login" class="on" type="button">Ingresar</button><button data-m="registro" id="tab-reg" type="button">Crear cuenta</button></div>
+    <form id="l-form" novalidate>
+      <label id="campo-nombre" hidden>Nombre<input id="l-nombre" placeholder="Tu nombre" autocomplete="name" maxlength="60"></label>
+      <label>Usuario<input id="l-usuario" placeholder="usuario" autocomplete="username" autocapitalize="none" required></label>
+      <label>Contraseña<div class="inp"><input id="l-clave" type="password" placeholder="Mínimo 8 caracteres" autocomplete="current-password" required><button type="button" id="ver">Mostrar</button></div></label>
+      <div id="medidor" data-s="0" hidden><i></i><i></i><i></i><i></i></div>
+      <p id="l-error" role="alert"></p>
+      <button class="cta" id="l-enviar">Ingresar</button>
+    </form>
+  </div>
+</section>
+
+<div id="app" hidden>
+<div class="wrap">
+  <div class="top">
+    <div class="logo"><i><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></i>Monitor</div>
+    <div class="who glass"><span id="yo-nombre"></span><span class="av" id="yo-av"></span><button class="out" id="salir">Salir</button></div>
+  </div>
+  <div class="hero"><h1>Panel de <span class="grad">fuentes y casos</span></h1><p>Revisa si tus equipos y servicios responden y sigue cada falla hasta resolverla.</p></div>
+  <div id="stats" aria-live="polite"></div>
+  <div class="layout">
+    <aside class="rail">
+      <div class="picker"><input id="entrada" placeholder="Elige tu opción (ej. 1+1)" aria-label="Elige tu opción" autocomplete="off"><button class="go" id="ir">Ir</button></div>
+      <div class="rail" id="menu"></div>
+    </aside>
+    <main class="stage glass" id="stage"></main>
+  </div>
+</div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<script>
+const $ = s => document.querySelector(s);
+const esc = t => String(t).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const SUB = {1:"Prueba todas las fuentes ahora",2:"Lo que sigue sin resolver",3:"Anota una falla a mano",4:"Cierra un caso ya atendido",5:"Todos los casos, nuevos y cerrados",6:"Cobros pendientes por urgencia",0:"Terminar la sesión"};
+let fuentes = [], actual = null, tt;
+
+function toast(t, tipo){ const e=$("#toast"); e.textContent=t; e.className="toast show "+tipo; clearTimeout(tt); tt=setTimeout(()=>e.className="toast "+tipo,3200); }
+async function api(url, opts){ const r=await fetch(url,opts); const d=await r.json().catch(()=>({})); if(r.status===401 && !url.includes("/auth/")){ mostrarLogin(); throw new Error(d.detail||"Sesión expirada"); } if(!r.ok) throw new Error(typeof d.detail==="string"?d.detail:"Revisa los datos"); return d; }
+const post = (u,b) => api(u,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b||{})});
+
+async function stats(){
+  const c = await api("/api/casos?estado=abierto");
+  const n = p => c.filter(x=>x.prioridad===p).length;
+  const K=[["Casos abiertos",c.length,"all"],["Prioridad alta",n("alta"),"alta"],["Prioridad media",n("media"),"media"],["Prioridad baja",n("baja"),"baja"]];
+  $("#stats").innerHTML=K.map(([t,v,k])=>`<div class="kpi ${k}"><span>${t}</span><b data-to="${v}">0</b></div>`).join("");
+  document.querySelectorAll(".kpi b").forEach(e=>{const to=+e.dataset.to;let i=0;const t=setInterval(()=>{e.textContent=Math.min(to,++i);if(i>=to)clearInterval(t)},40)});
+}
+
+function marcar(op){ document.querySelectorAll(".card").forEach(c=>c.classList.toggle("on", Number(c.dataset.op)===op)); }
+
+function bienvenida(){
+  marcar(-1);
+  $("#stage").innerHTML = `<div class="empty"><div><strong>Elige una opción para empezar</strong>Toca una tarjeta de la izquierda o escribe tu opción arriba.</div></div>`;
+}
+
+function listaCasos(casos, resolver){
+  if(!casos.length) return `<div class="empty" style="min-height:200px"><div><strong>Todo en orden</strong>No hay casos para mostrar.</div></div>`;
+  return `<div class="cases">` + casos.map((c,i)=>`
+    <div class="case ${c.prioridad}" style="animation-delay:${i*40}ms">
+      <span class="id">#${c.id}</span>
+      <div><b>${esc(c.fuente)}</b><span class="tag">${c.prioridad}</span><span class="tag">${esc(c.categoria)}</span>
+        <small>${esc(c.descripcion)} · ${c.fecha.replace("T"," ")} · ${c.estado}</small></div>
+      ${c.estado==="abierto" ? `<button class="btn" data-id="${c.id}">Resolver</button>` : ""}
+    </div>`).join("") + `</div>`;
+}
+
+function enlazarResolver(){
+  document.querySelectorAll("button[data-id]").forEach(b=>b.onclick=async()=>{
+    try{ await post(`/api/casos/${b.dataset.id}/resolver`); toast("Caso resuelto","good"); ejecutar(actual); }
+    catch(e){ toast(e.message,"bad"); }
+  });
+}
+
+async function ejecutar(op){
+  actual = op; marcar(op); const s=$("#stage");
+  try{
+    if(op===0){ await post("/api/auth/logout"); toast("Sesión cerrada. ¡Hasta pronto!","good"); mostrarLogin(); return; }
+    if(op===1){
+      s.innerHTML = `<h2>Revisando fuentes…</h2><p class="hint">Se consultan todas a la vez.</p><div class="tiles">` +
+        fuentes.map(f=>`<div class="tile scan"><b><i class="led"></i>${f}</b><span>consultando…</span></div>`).join("") + `</div>`;
+      const d = await post("/api/consultar");
+      const t = {ok:"responde bien",caido:"no responde",timeout:"muy lenta"};
+      s.innerHTML = `<h2>Resultado de la revisión</h2><p class="hint">Verde responde, ámbar va lenta, rojo está caída.</p><div class="tiles">` +
+        d.fuentes.map((f,i)=>`<div class="tile ${f.estado}" style="animation-delay:${i*110}ms"><b><i class="led"></i>${f.nombre}</b><span>${t[f.estado]}</span></div>`).join("") +
+        `</div><p class="sum">${d.fallas} fallas · ${d.nuevos} casos nuevos registrados</p>`;
+      stats();
+    } else if(op===2 || op===5 || op===4){
+      const tit = {2:"Casos abiertos",5:"Historial completo",4:"¿Qué caso se resolvió?"}[op];
+      const c = await api("/api/casos" + (op===5 ? "" : "?estado=abierto"));
+      s.innerHTML = `<h2>${tit}</h2><p class="hint">${op===4?"Pulsa Resolver en el caso que ya atendiste.":"Los más urgentes aparecen primero."}</p>` + listaCasos(c);
+      enlazarResolver();
+    } else if(op===6){
+      const f = await api("/api/facturas");
+      const hoy = new Date().toISOString().slice(0,10);
+      const pesos = n => "$" + Number(n).toLocaleString("es-CO");
+      const clase = {maxima:"alta", alta:"media", baja:"baja"};
+      const cuando = d => d<0 ? `vencida hace ${-d} día${d===-1?"":"s"}` : d===0 ? "vence hoy" : `vence en ${d} día${d===1?"":"s"}`;
+      s.innerHTML = `<h2>Facturas</h2><p class="hint">Las más urgentes aparecen primero. Al pagarlas salen de la cola.</p>
+        <div class="form" style="max-width:none;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:16px">
+          <input id="fa-con" placeholder="Concepto" aria-label="Concepto">
+          <input id="fa-mon" type="number" min="1" placeholder="Monto" aria-label="Monto">
+          <input id="fa-ven" type="date" value="${hoy}" aria-label="Vencimiento">
+          <button class="btn fill" id="fa-guardar">Registrar</button>
+        </div>` + (f.length ? `<div class="cases">` + f.map((x,i)=>`
+        <div class="case ${clase[x.prioridad]}" style="animation-delay:${i*40}ms">
+          <span class="id">#${x.id}</span>
+          <div><b>${esc(x.concepto)}</b><span class="tag">${x.prioridad==="maxima"?"máxima":x.prioridad}</span>
+            <small>${pesos(x.monto)} · ${cuando(x.dias)} (${x.vencimiento})</small></div>
+          <button class="btn" data-pagar="${x.id}">Marcar pagada</button>
+        </div>`).join("") + `</div>` : `<div class="empty" style="min-height:160px"><div><strong>Sin facturas pendientes</strong>Todo al día.</div></div>`);
+      $("#fa-guardar").onclick = async()=>{
+        try{
+          const d = await post("/api/facturas",{concepto:$("#fa-con").value,monto:Number($("#fa-mon").value),vencimiento:$("#fa-ven").value});
+          toast(`Factura ${d.id} registrada con prioridad ${d.prioridad==="maxima"?"máxima":d.prioridad}`,"good"); ejecutar(6);
+        }catch(e){ toast(e.message,"bad"); }
+      };
+      document.querySelectorAll("button[data-pagar]").forEach(b=>b.onclick=async()=>{
+        try{ await post(`/api/facturas/${b.dataset.pagar}/pagar`); toast("Factura pagada: sale de la cola","good"); ejecutar(6); }
+        catch(e){ toast(e.message,"bad"); }
+      });
+    } else if(op===3){
+      s.innerHTML = `<h2>Registrar un caso</h2><p class="hint">La prioridad se asigna según la fuente.</p>
+        <div class="form">
+          <label>Fuente<select id="f-fuente">${fuentes.map(f=>`<option>${f}</option>`).join("")}</select></label>
+          <label>¿Qué pasó?<input id="f-desc" placeholder="Describe la falla"></label>
+          <label>Categoría<input id="f-cat" placeholder="Si lo dejas vacío, será “otro”"></label>
+          <button class="btn fill" id="f-guardar">Guardar caso</button>
+        </div>`;
+      $("#f-guardar").onclick = async()=>{
+        try{
+          const d = await post("/api/casos",{fuente:$("#f-fuente").value,descripcion:$("#f-desc").value,categoria:$("#f-cat").value});
+          toast(`Caso ${d.id} guardado con prioridad ${d.prioridad}`,"good");
+          $("#f-desc").value=""; $("#f-cat").value=""; stats();
+        }catch(e){ toast(e.message,"bad"); }
+      };
+    }
+  }catch(e){ toast(e.message,"bad"); }
+}
+
+async function elegir(){
+  const inp=$("#entrada");
+  try{
+    const d = await post("/api/opcion",{texto:inp.value});
+    if(!d.valida){
+      toast(d.mensaje,"bad");
+      inp.classList.remove("shake"); void inp.offsetWidth; inp.classList.add("shake");
+      return;
+    }
+    inp.value=""; ejecutar(d.opcion);
+  }catch(e){ toast(e.message,"bad"); }
+}
+
+const ICONOS={1:"M4 12a8 8 0 1 0 16 0 8 8 0 0 0-16 0m8-4v4l3 2",2:"M12 3 2 20h20zM12 10v4m0 3v.5",3:"M12 5v14M5 12h14",4:"m5 13 4 4L19 7",5:"M4 5h16M4 12h16M4 19h10",6:"M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6",0:"M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"};
+async function iniciar(){
+  const d = await api("/api/menu");
+  fuentes = d.fuentes;
+  const m=$("#menu"); m.innerHTML="";
+  Object.entries(d.menu).sort((a,b)=>(a[0]==0?99:a[0])-(b[0]==0?99:b[0])).forEach(([n,t])=>{
+    const b=document.createElement("button");
+    b.className="card"+(n==="0"?" salir":""); b.dataset.op=n;
+    b.innerHTML=`<span class="n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${ICONOS[n]||""}"/></svg></span><span><b>${esc(t)}</b><small>${SUB[n]||""}</small></span><kbd>${n}</kbd>`;
+    b.onclick=()=>ejecutar(Number(n)); m.appendChild(b);
+  });
+  bienvenida(); stats();
+}
+function entrar(u){
+  $("#login").hidden=true; $("#app").hidden=false;
+  $("#yo-nombre").textContent=u.nombre; $("#yo-av").textContent=u.nombre.trim()[0].toUpperCase();
+  iniciar().catch(()=>{});
+}
+function mostrarLogin(){ $("#app").hidden=true; $("#login").hidden=false; $("#l-clave").value=""; }
+let modo="login";
+function pestana(m){
+  modo=m; document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("on",b.dataset.m===m));
+  $("#campo-nombre").hidden = m!=="registro"; $("#medidor").hidden = m!=="registro";
+  $("#l-enviar").textContent = m==="login" ? "Ingresar" : "Crear mi cuenta";
+  $("#l-clave").autocomplete = m==="login" ? "current-password" : "new-password"; $("#l-error").textContent="";
+}
+async function enviarLogin(ev){
+  ev.preventDefault(); const bt=$("#l-enviar"), er=$("#l-error"); er.textContent=""; bt.disabled=true;
+  try{
+    const body={usuario:$("#l-usuario").value,clave:$("#l-clave").value};
+    if(modo==="registro") body.nombre=$("#l-nombre").value;
+    const d=await post(modo==="login"?"/api/auth/login":"/api/auth/registro",body); entrar(d.usuario);
+  }catch(e){ er.textContent=e.message; const c=$(".glass"); c.classList.remove("shake"); void c.offsetWidth; c.classList.add("shake"); }
+  bt.disabled=false;
+}
+$("#l-form").onsubmit=enviarLogin;
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>pestana(b.dataset.m));
+$("#ver").onclick=()=>{const i=$("#l-clave"); i.type=i.type==="password"?"text":"password"; $("#ver").textContent=i.type==="password"?"Mostrar":"Ocultar";};
+$("#l-clave").addEventListener("input",e=>{const v=e.target.value; let s=0; if(v.length>=8)s++; if(v.length>=12)s++; if(/[A-Z]/.test(v)&&/[a-z]/.test(v))s++; if(/\d/.test(v)&&/[^\w]/.test(v))s++; $("#medidor").dataset.s=v?Math.max(1,s):0;});
+$("#salir").onclick=()=>ejecutar(0);
+$("#ir").onclick=elegir;
+$("#entrada").addEventListener("keydown",e=>{ if(e.key==="Enter") elegir(); });
+fetch("/api/auth/yo").then(r=>r.json()).then(d=>{ if(!d.registro) $("#tab-reg").hidden=true; d.usuario?entrar(d.usuario):mostrarLogin(); });
+</script>
+</body>
+</html>
