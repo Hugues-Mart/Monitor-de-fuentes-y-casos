@@ -53,6 +53,7 @@ Las fuentes son simuladas, con fallas y retrasos aleatorios, para poder demostra
 
 ## Estructura del proyecto
 
+```
 monitor_web/
 ├── monitor/
 │   ├── app/
@@ -69,6 +70,7 @@ monitor_web/
 ├── requirements.txt
 ├── .env.example
 └── .gitignore
+```
 
 **Dónde se guarda cada listado**
 
