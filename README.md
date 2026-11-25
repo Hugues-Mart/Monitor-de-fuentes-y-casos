@@ -1,6 +1,6 @@
 # Monitor de fuentes y casos
 
-Proyecto final de Programación Avanzada A1 (Universidad de La Guajira, 2026-2). Es una aplicación web que revisa el estado de varios equipos y pasarelas de pago al mismo tiempo, registra cada falla como un caso, ordena los casos según su urgencia y guarda el historial para consultarlo.
+Proyecto final de Programación Avanzada A1. Es una aplicación web que revisa el estado de varios equipos y pasarelas de pago al mismo tiempo, registra cada falla como un caso, ordena los casos según su urgencia y guarda el historial para consultarlo.
 
 ## Problema que resuelve
 
